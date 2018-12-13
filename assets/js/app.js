@@ -43,13 +43,15 @@ var chartGroup = svg.append("g")
 d3.csv("data/data.csv", function (err, Data) {
   if (err) throw err;
 
-  //Parse Data/Cast as numbers
+  // Step 1: Parse Data/Cast as numbers
+  // ==============================
   Data.forEach(function (data) {
     data.poverty = +data.poverty;
     data.healthcareLow = +data.healthcareLow;
   });
 
-  //Create scale functions
+  // Step 2: Create scale functions
+  // ==============================
   var xLinearScale = d3.scaleLinear()
     .domain(d3.extent(Data, d => d.poverty))
     .range([0, width]);
@@ -58,11 +60,13 @@ d3.csv("data/data.csv", function (err, Data) {
     .domain([0, d3.max(Data, d => d.healthcareLow)])
     .range([height, 0]);
 
-  //Create axis functions
+  // Step 3: Create axis functions
+  // ==============================
   var bottomAxis = d3.axisBottom(xLinearScale);
   var leftAxis = d3.axisLeft(yLinearScale);
 
-  //Append Axes to the chart
+  // Step 4: Append Axes to the chart
+  // ==============================
   chartGroup.append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(bottomAxis);
@@ -70,15 +74,16 @@ d3.csv("data/data.csv", function (err, Data) {
   chartGroup.append("g")
     .call(leftAxis);
 
-   //Create Circles
+  // Step 5: Create Circles
+  // ==============================
   var circlesGroup = chartGroup.selectAll("circle")
   .data(Data)
   .enter()
   .append("circle")
   .attr("cx", d => xLinearScale(d.poverty))
   .attr("cy", d => yLinearScale(d.healthcareLow))
-  .attr("r", "15")
-  .attr("fill", "Green")
+  .attr("r", "18")
+  .attr("fill", "Purple")
   .attr("opacity", ".5")
 
   //Create state labels
@@ -100,7 +105,8 @@ d3.csv("data/data.csv", function (err, Data) {
         });
   
 
-  //Initialize tool tip
+    // Step 6: Initialize tool tip
+    // ==============================
   var toolTip = d3.tip()
     .attr("class", "tooltip")
     .offset([80, -60])
@@ -108,10 +114,12 @@ d3.csv("data/data.csv", function (err, Data) {
       return (`${d.state}<br>Poverty: ${d.poverty}<br>Low Health Care: ${d.healthcareLow}`);
     });
 
-  //Create tooltip in the chart
+  // Step 7: Create tooltip in the chart
+  // ==============================
   chartGroup.call(toolTip);
 
-  //Create event listeners to display and hide the tooltip
+  // Step 8: Create event listeners to display and hide the tooltip
+  // ==============================
   circlesGroup.on("click", function (data) {
       toolTip.show(data);
     })
